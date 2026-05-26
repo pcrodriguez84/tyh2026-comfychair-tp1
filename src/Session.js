@@ -73,7 +73,7 @@ class Session{
         return this.bidFor(paper, reviewer).interest();
     }
 
-    //Reviewer assignment TEST
+    
     assignReviewers(){
         for(let paper of this._papers){
             let assignedReviewers = this._programCommittee.slice(0, 3);
@@ -92,6 +92,20 @@ class Session{
     reviewersFor(paper){
         let assignmentsForPaper = this._assignments.filter( (assignment) => assignment.paper == paper );
         return assignmentsForPaper.map( (assignment) => assignment.reviewer );
+    }
+
+
+
+    //Review submission  TEST (2)
+    //el reviewer fue asignado
+    //guardar review
+    submitReview(paper, reviewer, reviewText, score){
+
+        if(!this.reviewersFor(paper).includes(reviewer))
+            throw new Error("Reviewer not assigned");
+    
+        paper.addReview(reviewer, reviewText, score);
+    
     }
 
 

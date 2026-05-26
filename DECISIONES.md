@@ -18,13 +18,41 @@ entendemos que:
 - Se evita crear clases nuevas innecesarias para el alcance del TP.
 
 ### Decisión 2 - Representar asignaciones como pares paper-reviewer
+Esta implementación cubre parte del punto **4.1 – Asignación de revisores** del TP, específicamente:
+Asignación de exactamente tres reviewers por paper Y consulta de reviewers asignados a un artículo
 
-Se implementó las asignaciones de revisión como una colección de pares compuestos por 
-paper y reviewer dentro de Session, quedando justificado lo siguiente:
+Se implementó el test de asignación de reviewers en `Session.test.js`, verificando que cada paper 
+tenga exactamente tres reviewers asignados luego del proceso de asignación.
 
-- Se permite consultar fácilmente los revisores asignados a un artículo.
-- Se mantiene la responsabilidad del flujo de revisión dentro de Session.
-- Es suficiente para el alcance del TP sin introducir clases adicionales.
+Para soportar este comportamiento, se agregaron en la clase `Session` el atributo `_assignments` y 
+los métodos `assignReviewers()` y `reviewersFor()`.
+
+Se decidió representar las asignaciones de revisión como una colección de pares compuestos por paper y 
+reviewer dentro de la clase `Session`.
+
+Con esta implementación se logra:
+- Consultar fácilmente los reviewers asignados a cada paper.
+- Mantener centralizada la lógica de asignación dentro de Session.
+- Facilitar la validación posterior de reviewers habilitados para realizar revisiones.
+
+### Decisión 3 - Delegar almacenamiento de reviews a Paper
+
+Esta implementación cubre parte del punto 4.2 – Carga de revisiones del TP, específicamente:
+validación de reviewer asignado, registro de revisiones y cálculo del score promedio del paper
+en función de las reviws cargas.
+
+Se implementó el test de carga de revisiones en Session.test.js, verificando que un reviewer 
+asignado pueda cargar correctamente una review sobre un paper previamente asignado.
+
+Para soportar este comportamiento, se agregó el método submitReview() en la clase Session, 
+delegando el almacenamiento de las revisiones al objeto Paper.
+
+Se decidió mantener las reviews dentro de Paper, ya que forman parte del estado propio del 
+artículo y son necesarias para calcular su score promedio.
+
+Session solamente controla el flujo y las restricciones del proceso de revisión: decide cuándo 
+se puede revisar, quién puede revisar y qué reviewers están asignados. Paper es el responsable 
+de almacenar las revisiones y calcular el score del artículo.
 
 ## Ambigüedades
 
