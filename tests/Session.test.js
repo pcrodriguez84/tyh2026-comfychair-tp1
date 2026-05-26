@@ -80,3 +80,26 @@ describe("During the bidding process, a Session", ()=>{  //Durante el proceso de
         expect(submission).toThrow();
     })
 })
+
+//Reviewer assignment TEST
+describe("Reviewer assignment", ()=>{
+    it("should assign exactly three reviewers to each paper", ()=>{
+        let reviewer1 = new User("Reviewer 1", "UNLP", "r1@test.com", "123");
+        let reviewer2 = new User("Reviewer 2", "UNLP", "r2@test.com", "123");
+        let reviewer3 = new User("Reviewer 3", "UNLP", "r3@test.com", "123");
+
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+
+        asse.submit(paper01);
+        asse.closeSubmissions();
+
+        asse.assignReviewers();
+
+        expect(asse.reviewersFor(paper01)).toHaveLength(3);
+        expect(asse.reviewersFor(paper01)).toContain(reviewer1);
+        expect(asse.reviewersFor(paper01)).toContain(reviewer2);
+        expect(asse.reviewersFor(paper01)).toContain(reviewer3);
+    })
+})

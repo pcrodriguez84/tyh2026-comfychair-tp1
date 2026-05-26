@@ -17,6 +17,15 @@ entendemos que:
 - Session representa el ciclo de vida del proceso.
 - Se evita crear clases nuevas innecesarias para el alcance del TP.
 
+### Decisión 2 - Representar asignaciones como pares paper-reviewer
+
+Se implementó las asignaciones de revisión como una colección de pares compuestos por 
+paper y reviewer dentro de Session, quedando justificado lo siguiente:
+
+- Se permite consultar fácilmente los revisores asignados a un artículo.
+- Se mantiene la responsabilidad del flujo de revisión dentro de Session.
+- Es suficiente para el alcance del TP sin introducir clases adicionales.
+
 ## Ambigüedades
 
 Pendiente completar durante el desarrollo.

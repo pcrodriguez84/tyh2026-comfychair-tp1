@@ -6,6 +6,7 @@ class Session{
         this._programCommittee=[];
         this._papers=[];
         this._bids=[];
+        this._assignments = []; //Reviewer assignment TEST
         this._stage="Receiving";
     }
     name(){
@@ -71,6 +72,29 @@ class Session{
     interestFor(paper, reviewer){
         return this.bidFor(paper, reviewer).interest();
     }
+
+    //Reviewer assignment TEST
+    assignReviewers(){
+        for(let paper of this._papers){
+            let assignedReviewers = this._programCommittee.slice(0, 3);
+    
+            for(let reviewer of assignedReviewers){
+                this._assignments.push({
+                    paper: paper,
+                    reviewer: reviewer
+                });
+            }
+        }
+    
+        this.setStage("Reviewing");
+    }
+    
+    reviewersFor(paper){
+        let assignmentsForPaper = this._assignments.filter( (assignment) => assignment.paper == paper );
+        return assignmentsForPaper.map( (assignment) => assignment.reviewer );
+    }
+
+
 }
 
 module.exports = Session;
