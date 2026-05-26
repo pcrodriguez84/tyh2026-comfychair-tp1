@@ -1,0 +1,82 @@
+const Session = require("../src/Session");
+const User = require("../src/User");
+const Paper = require("../src/Paper");
+const {Bid, Interests} = require("../src/Bid");
+
+let newSession;
+let asse;
+let juan, julian, matias;
+let paper01, paper02, paper03;
+
+beforeEach( ()=> {
+    newSession = new Session();
+    asse = new Session();
+    juan = new User("Juan Gardey", "LIFIA, UNLP", "jgardey@lifia.ar", "123");
+    julian = new User("Julián Grigera", "LIFIA, UNLP", "jgrigera@lifia.ar", "123");
+    matias = new User("Matias Urbieta", "LIFIA, UNLP", "murbieta@lifia.ar", "123");
+    paper01 = new Paper("A new approach on something", [juan, julian], juan);
+    paper02 = new Paper("Another approach on something else", [matias, julian], matias);
+    paper03 = new Paper("Yet another approach on something", [juan, matias], juan);
+});
+
+describe("A new Session", () =>{              //TITULO
+    it("should have an empty name", ()=> {    //LO QUE DEBERIA PASAR
+        expect(newSession.name()).toBe("");   //RESULTADO ESPERADO  El nombre debería ser "".
+    })
+
+    it("should have an empty Program Committee", ()=>{  //LO QUE DEBERIA PASAR
+        expect(newSession.programCommittee()).toHaveLength(0);   //RESULTADO ESPERADO
+    })
+})
+ 
+describe("A Session", ()=>{
+    it("should be able to add PC members.", ()=>{
+        asse.addReviewer(juan);
+        expect(asse.reviewers()).toContain(juan);
+        expect(asse.reviewers()).toHaveLength(1);
+    })
+    it("should allow paper submissions", ()=>{
+        expect(asse.canSubmit(paper01)).toBe(true);
+        asse.submit(paper01);
+        expect(asse.papers()).toContain(paper01);
+    })
+})
+
+//Bidding process: Proceso de asignación (o selección).
+//Session: Sesión (grupo de artículos o área temática).
+//Receive bids: Recibir ofertas / Recibir propuestas.
+
+//TESTS SIEMPRE TIENEN (El test verifica comportamiento)
+//1. Preparación
+//2. Acción
+//3. Verificación
+
+//Qué prepara
+//Qué ejecuta
+//Qué verifica
+
+describe("During the bidding process, a Session", ()=>{  //Durante el proceso de selección, una sesion (articulo), deberia recibir propuestas.
+    it("should receive bids", ()=>{
+        asse.closeSubmissions();  //la session pasa a bidding (preparación)
+        asse.enterBid(paper02, juan, Interests.Interested); // Juan Carga interés
+        expect(asse.bidExistsFor(paper02, juan)).toBe(true); // Verificamos que el Bid exista
+        expect(asse.interestFor(paper02, juan)).toBe(Interests.Interested); // verificamos
+    })
+    it("should allow overriding bids", ()=>{
+        asse.closeSubmissions();
+        asse.enterBid(paper02, juan, Interests.Interested);
+        const secondBid = () => {asse.enterBid(paper02, juan, Interests.Maybe)};
+        expect(secondBid).not.toThrow();
+        expect(asse.interestFor(paper02, juan)).toBe(Interests.Maybe);
+        expect(asse.bids()).toHaveLength(1);
+    })
+    it("should not allow to receive submissions", ()=>{
+        asse.closeSubmissions();
+        expect(asse.canSubmit(paper01)).toBe(false);
+    })
+    it("should fail to receive submissions", ()=>{
+        asse.closeSubmissions();
+        let submission = ()=>{asse.submit(paper01)};
+        expect(submission).toThrow();
+    })
+})
