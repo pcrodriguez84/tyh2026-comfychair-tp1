@@ -41,7 +41,8 @@ Esta implementación cubre parte del punto 4.2 – Carga de revisiones del TP, e
 validación de reviewer asignado, registro de revisiones y cálculo del score promedio del paper
 en función de las reviws cargas.
 
-Se implementó el test de carga de revisiones en Session.test.js, verificando que un reviewer 
+Se implementó el test /*TEST should allow assigned reviewers to submit reviews*/
+de carga de revisiones en Session.test.js, verificando que un reviewer 
 asignado pueda cargar correctamente una review sobre un paper previamente asignado.
 
 Para soportar este comportamiento, se agregó el método submitReview() en la clase Session, 
@@ -54,8 +55,13 @@ Session solamente controla el flujo y las restricciones del proceso de revisión
 se puede revisar, quién puede revisar y qué reviewers están asignados. Paper es el responsable 
 de almacenar las revisiones y calcular el score del artículo.
 
+/*TEST  should not allow unassigned reviewers to submit reviews*/
 También se agregó una validación para impedir que reviewers no asignados puedan cargar 
 revisiones sobre un paper.  (caso límite)
+
+/*TEST should not allow more than three reviews per paper*/
+También se validó el límite máximo de tres revisiones por paper, reutilizando la restricción 
+ya definida dentro de la clase Paper.
 
 ## Ambigüedades
 

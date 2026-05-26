@@ -135,7 +135,7 @@ describe("Review submission", ()=>{
     })
 
 
-
+    //un reviewer NO asignado no puede revisar
     it("should not allow unassigned reviewers to submit reviews", ()=>{
 
         let reviewer1 = new User("Reviewer 1", "UP", "r1@test.com", "123");
@@ -157,7 +157,36 @@ describe("Review submission", ()=>{
             asse.submitReview(paper01, outsider, "Bad review", 1);
         };
     
-        expect(invalidReview).toThrow();
+        expect(invalidReview).toThrow(); //significa espero que falle
+    
+    })
+
+    //un paper no puede tener más de 3 reviews
+    it("should not allow more than three reviews per paper", ()=>{
+
+        let reviewer1 = new User("Reviewer 1", "UP", "r1@test.com", "123");
+        let reviewer2 = new User("Reviewer 2", "UP", "r2@test.com", "123");
+        let reviewer3 = new User("Reviewer 3", "UP", "r3@test.com", "123");
+    
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+    
+        asse.submit(paper01);
+    
+        asse.closeSubmissions();
+    
+        asse.assignReviewers();
+    
+        asse.submitReview(paper01, reviewer1, "Review 1", 1);
+        asse.submitReview(paper01, reviewer2, "Review 2", 2);
+        asse.submitReview(paper01, reviewer3, "Review 3", 3);
+    
+        let extraReview = () => {
+            asse.submitReview(paper01, reviewer1, "Extra review", 1);
+        };
+    
+        expect(extraReview).toThrow();
     
     })
 
