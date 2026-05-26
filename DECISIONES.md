@@ -54,6 +54,9 @@ Session solamente controla el flujo y las restricciones del proceso de revisión
 se puede revisar, quién puede revisar y qué reviewers están asignados. Paper es el responsable 
 de almacenar las revisiones y calcular el score del artículo.
 
+También se agregó una validación para impedir que reviewers no asignados puedan cargar 
+revisiones sobre un paper.  (caso límite)
+
 ## Ambigüedades
 
 Pendiente completar durante el desarrollo.

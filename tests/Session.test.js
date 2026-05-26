@@ -106,10 +106,10 @@ describe("Reviewer assignment", ()=>{
 
 
 //Review submission  TEST (2)
-//reviewer asignado puede revisar
-//review queda registrada
 describe("Review submission", ()=>{
 
+    //reviewer asignado puede revisar
+    //review queda registrada 
     it("should allow assigned reviewers to submit reviews", ()=>{
 
         let reviewer1 = new User("Reviewer 1", "UP", "r1@test.com", "123");
@@ -132,6 +132,33 @@ describe("Review submission", ()=>{
 
         expect(paper01.score()).toBe(3);
 
+    })
+
+
+
+    it("should not allow unassigned reviewers to submit reviews", ()=>{
+
+        let reviewer1 = new User("Reviewer 1", "UP", "r1@test.com", "123");
+        let reviewer2 = new User("Reviewer 2", "UP", "r2@test.com", "123");
+        let reviewer3 = new User("Reviewer 3", "UP", "r3@test.com", "123");
+        let outsider = new User("Outsider", "UNLP", "out@test.com", "123");
+    
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+    
+        asse.submit(paper01);
+    
+        asse.closeSubmissions();
+    
+        asse.assignReviewers();
+    
+        let invalidReview = () => {
+            asse.submitReview(paper01, outsider, "Bad review", 1);
+        };
+    
+        expect(invalidReview).toThrow();
+    
     })
 
 })
