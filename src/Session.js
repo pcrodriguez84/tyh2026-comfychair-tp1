@@ -75,19 +75,59 @@ class Session{
 
     
     assignReviewers(){
+
+        // Recorre todos los papers enviados en la sesión
         for(let paper of this._papers){
-            let assignedReviewers = this._programCommittee.slice(0, 3);
     
+            // Busca reviewers que hayan marcado Interested
+            // para el paper actual
+            let interestedReviewers = this._bids
+    
+                // Filtra bids:  del paper actual y  con interés Interested
+                .filter( (bid) =>
+                    bid.paper() == paper &&
+                    bid.interest() == Interests.Interested
+                )
+    
+                // Obtiene solamente el reviewer de cada bid
+                .map( (bid) => bid.reviewer() );
+        
+    
+            // Obtiene reviewers restantes del comité
+            // que todavía no fueron seleccionados
+            let remainingReviewers = this._programCommittee
+    
+                // Filtra reviewers que NO estén
+                // dentro de los interesados
+                .filter( (reviewer) =>
+                    !interestedReviewers.includes(reviewer)
+                );
+        
+            // Une:
+            // 1. reviewers interesados
+            // 2. reviewers restantes
+            //
+            // y toma solamente los primeros 3
+            let assignedReviewers = interestedReviewers
+                .concat(remainingReviewers)
+                .slice(0,3);
+    
+    n        // Guarda las asignaciones reviewer-paper
             for(let reviewer of assignedReviewers){
+    
                 this._assignments.push({
                     paper: paper,
                     reviewer: reviewer
                 });
+    
             }
         }
     
+        // Cambia la etapa de la sesión a Reviewing
         this.setStage("Reviewing");
     }
+
+
     
     reviewersFor(paper){
         let assignmentsForPaper = this._assignments.filter( (assignment) => assignment.paper == paper );

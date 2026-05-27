@@ -190,4 +190,30 @@ describe("Review submission", ()=>{
     
     })
 
+    //si alguien marcó Interested, debería ser elegido
+    //TEST Prioridad de Bids
+    it("should prioritize interested reviewers during assignment", ()=>{
+
+        let reviewer1 = new User("Reviewer 1", "UNLP", "r1@test.com", "123");
+        let reviewer2 = new User("Reviewer 2", "UNLP", "r2@test.com", "123");
+        let reviewer3 = new User("Reviewer 3", "UNLP", "r3@test.com", "123");
+        let reviewer4 = new User("Reviewer 4", "UNLP", "r4@test.com", "123");
+    
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+        asse.addReviewer(reviewer4);
+    
+        asse.submit(paper01);
+    
+        asse.closeSubmissions();
+    
+        asse.enterBid(paper01, reviewer4, Interests.Interested);
+    
+        asse.assignReviewers();
+    
+        expect(asse.reviewersFor(paper01)).toContain(reviewer4);
+    
+    })
+
 })

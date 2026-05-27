@@ -37,7 +37,7 @@ Con esta implementación se logra:
 
 ### Decisión 3 - Delegar almacenamiento de reviews a Paper
 
-Esta implementación cubre parte del punto 4.2 – Carga de revisiones del TP, específicamente:
+Esta implementación cubre parte del **punto 4.2 – Carga de revisiones del TP**, específicamente:
 validación de reviewer asignado, registro de revisiones y cálculo del score promedio del paper
 en función de las reviws cargas.
 
@@ -62,6 +62,19 @@ revisiones sobre un paper.  (caso límite)
 /*TEST should not allow more than three reviews per paper*/
 También se validó el límite máximo de tres revisiones por paper, reutilizando la restricción 
 ya definida dentro de la clase Paper.
+
+### Decisión 4 -  Priorizar reviewers según bids de interés
+Esta implementación cubre parte del punto **4.1 – Asignación de revisores** del TP, específicamente:
+- Priorización de reviewers según interés expresado en los bids
+- Asignación de reviewers interesados antes que el resto de los revisores disponibles.
+
+Se implementó el test de prioridad de bids en `Session.test.js`, verificando que los reviewers que marcaron
+ `Interested` sean priorizados durante el proceso de asignación de revisores.
+
+Para soportar este comportamiento, se modificó el método `assignReviewers()` en la clase `Session`, 
+incorporando una lógica básica de priorización basada en los bids registrados para cada paper.
+
+
 
 ## Ambigüedades
 
