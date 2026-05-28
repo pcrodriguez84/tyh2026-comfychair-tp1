@@ -87,7 +87,18 @@ excluyendo del proceso de asignación a los autores del artículo evaluado.
 Esta implementación evita que un autor evalúe su propio trabajo, mantiene coherencia con el dominio académico modelado y
 mejora la calidad del proceso de revisión.
 
+### Decisión 6 - Seleccionar papers según score promedio
+Esta implementación cubre parte del punto **4.3 – Selección de artículos** del TP, específicamente:
+Ordenamiento de papers según score, selección de mejores artículos y límite porcentual de aceptación.
 
+Se implementó el test de selección de artículos en `Session.test.js`, verificando que los papers con mejor 
+score promedio sean priorizados durante el proceso de aceptación.
+
+Para soportar este comportamiento, se agregó el método `selectAcceptedPapers()` en la clase `Session`, 
+ordenando los artículos según su score promedio y limitando la cantidad de aceptados según el 
+porcentaje configurado.
+Esta implementación permite modelar un proceso básico de aceptación académica, mantiene la lógica de 
+selección centralizada dentro de Session y reutiliza el cálculo de score ya definido en la clase Paper.
 
 ## Ambigüedades
 

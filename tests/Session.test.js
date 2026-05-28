@@ -255,3 +255,37 @@ describe("Review submission", ()=>{
     })
 
 })
+
+//TEST el paper con mejor score debe quedar seleccionado.
+describe("Paper selection", ()=>{
+
+    it("should select papers with the highest scores", ()=>{
+
+        let reviewer1 = new User("Reviewer 1", "UNLP", "r1@test.com", "123");
+        let reviewer2 = new User("Reviewer 2", "UNLP", "r2@test.com", "123");
+        let reviewer3 = new User("Reviewer 3", "UNLP", "r3@test.com", "123");
+
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+
+        asse.submit(paper01);
+        asse.submit(paper02);
+
+        asse.closeSubmissions();
+
+        asse.assignReviewers();
+
+        // paper01 score = 3
+        asse.submitReview(paper01, reviewer1, "Excellent", 3);
+
+        // paper02 score = 1
+        asse.submitReview(paper02, reviewer1, "Good", 1);
+
+        let acceptedPapers = asse.selectAcceptedPapers(50);
+
+        expect(acceptedPapers).toContain(paper01);
+
+    })
+
+})

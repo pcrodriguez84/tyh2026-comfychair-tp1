@@ -152,6 +152,23 @@ class Session{
     
     }
 
+    selectAcceptedPapers(acceptancePercentage){
+
+        // Ordena papers de mayor score a menor score
+        let orderedPapers = this._papers.sort(
+            (paperA, paperB) => paperB.score() - paperA.score()
+        );
+    
+        // Calcula cantidad máxima de papers aceptados
+        let acceptedCount = Math.ceil(
+            orderedPapers.length * acceptancePercentage / 100
+        );
+    
+        // Devuelve solamente los mejores papers
+        return orderedPapers.slice(0, acceptedCount);
+    
+    }
+
 
 }
 
