@@ -286,6 +286,6 @@ describe("Paper selection", ()=>{
 
         expect(acceptedPapers).toContain(paper01);
 
-    })
+    })//
 
 })
