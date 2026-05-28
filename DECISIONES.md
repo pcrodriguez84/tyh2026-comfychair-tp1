@@ -30,10 +30,9 @@ los métodos `assignReviewers()` y `reviewersFor()`.
 Se decidió representar las asignaciones de revisión como una colección de pares compuestos por paper y 
 reviewer dentro de la clase `Session`.
 
-Con esta implementación se logra:
-- Consultar fácilmente los reviewers asignados a cada paper.
-- Mantener centralizada la lógica de asignación dentro de Session.
-- Facilitar la validación posterior de reviewers habilitados para realizar revisiones.
+Con esta implementación se logra consultar fácilmente los reviewers asignados a cada paper,
+mantener centralizada la lógica de asignación dentro de Session, facilitar la validación posterior 
+de reviewers habilitados para realizar revisiones.
 
 ### Decisión 3 - Delegar almacenamiento de reviews a Paper
 
@@ -73,6 +72,20 @@ Se implementó el test de prioridad de bids en `Session.test.js`, verificando qu
 
 Para soportar este comportamiento, se modificó el método `assignReviewers()` en la clase `Session`, 
 incorporando una lógica básica de priorización basada en los bids registrados para cada paper.
+
+
+### Decisión 5 - Excluir autores del proceso de revisión
+
+Esta implementación cubre parte opcional del punto **4.1 – Asignación de revisores** del TP, específicamente:
+Validación de conflictos de interés entre autores y reviewers.
+
+Se implementó el test de conflicto de interés en `Session.test.js`, verificando que un autor no pueda ser 
+asignado como reviewer de su propio paper.
+
+Para soportar este comportamiento, se modificó el método `assignReviewers()` en la clase `Session`, 
+excluyendo del proceso de asignación a los autores del artículo evaluado.
+Esta implementación evita que un autor evalúe su propio trabajo, mantiene coherencia con el dominio académico modelado y
+mejora la calidad del proceso de revisión.
 
 
 

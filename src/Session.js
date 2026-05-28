@@ -96,9 +96,13 @@ class Session{
             // Obtiene reviewers restantes del comité
             // que todavía no fueron seleccionados
             let remainingReviewers = this._programCommittee
+
+              // Excluye autores del paper
+                .filter( (reviewer) =>
+                     !paper._authors.includes(reviewer)
+                )
     
-                // Filtra reviewers que NO estén
-                // dentro de los interesados
+                // Filtra reviewers que NO estén dentro de los interesados
                 .filter( (reviewer) =>
                     !interestedReviewers.includes(reviewer)
                 );
@@ -112,7 +116,7 @@ class Session{
                 .concat(remainingReviewers)
                 .slice(0,3);
     
-    n        // Guarda las asignaciones reviewer-paper
+           // Guarda las asignaciones reviewer-paper
             for(let reviewer of assignedReviewers){
     
                 this._assignments.push({

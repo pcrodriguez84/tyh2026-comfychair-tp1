@@ -190,29 +190,67 @@ describe("Review submission", ()=>{
     
     })
 
-    //si alguien marcó Interested, debería ser elegido
+    //Si alguien marcó Interested, debería ser elegido y debería tener prioridad durante el proceso de selección.
     //TEST Prioridad de Bids
     it("should prioritize interested reviewers during assignment", ()=>{
 
+          // Creamos cuatro reviewers
         let reviewer1 = new User("Reviewer 1", "UNLP", "r1@test.com", "123");
         let reviewer2 = new User("Reviewer 2", "UNLP", "r2@test.com", "123");
         let reviewer3 = new User("Reviewer 3", "UNLP", "r3@test.com", "123");
         let reviewer4 = new User("Reviewer 4", "UNLP", "r4@test.com", "123");
     
+        //se agregan riviewers al comite
         asse.addReviewer(reviewer1);
         asse.addReviewer(reviewer2);
         asse.addReviewer(reviewer3);
         asse.addReviewer(reviewer4);
     
+         // Se envía el paper a la sesión
         asse.submit(paper01);
     
+        //sesion pasa a etapa de bidding
         asse.closeSubmissions();
     
+        //Reviewer4 expresa interés en revisar paper01 mediante un bid Interested
         asse.enterBid(paper01, reviewer4, Interests.Interested);
-    
+        
+        // Se ejecuta el proceso de asignación  de reviewers
         asse.assignReviewers();
     
+         // Verificamos que reviewer4 haya sido asignado como reviewer del paper, debido a su interés
         expect(asse.reviewersFor(paper01)).toContain(reviewer4);
+    
+    })
+
+
+    // TEST Un autor no pude revisar su propo paper
+    it("should not assign authors as reviewers of their own papers", ()=>{
+
+        
+        //se crean 2 reviewers normales
+        let reviewer1 = new User("Reviewer 1", "UNLP", "r1@test.com", "123");
+        let reviewer2 = new User("Reviewer 2", "UNLP", "r2@test.com", "123");
+    
+         // Agregamos reviewers al comité
+        // Juan también se agrega como reviewer, pero Juan es autor de paper01
+        asse.addReviewer(juan);
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+    
+
+        // Se envía el paper a la sesión, paper01 tiene a Juan como autor
+        asse.submit(paper01);
+    
+         // La sesión pasa a etapa de bidding
+        asse.closeSubmissions();
+    
+        // Se ejecuta el proceso de asignación de reviewers
+        asse.assignReviewers();
+    
+         // Verificamos que Juan NO haya sido asignado como reviewer de su propio paper
+         //la lista de reviewers NO debe contener a Juan
+        expect(asse.reviewersFor(paper01)).not.toContain(juan);
     
     })
 
