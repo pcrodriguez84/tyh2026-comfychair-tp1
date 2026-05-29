@@ -100,10 +100,41 @@ porcentaje configurado.
 Esta implementación permite modelar un proceso básico de aceptación académica, mantiene la lógica de 
 selección centralizada dentro de Session y reutiliza el cálculo de score ya definido en la clase Paper.
 
-## Ambigüedades
+## Observaciones 
 
-Pendiente completar durante el desarrollo.
+Durante la implementación se identificaron algunas cuestiones no completamente especificadas en el enunciado,
+por lo tanto se observó que no se detalla cómo resolver empates entre artículos con igual score promedio durante 
+el proceso de selección, no se especifica una estrategia obligatoria para distribuir la carga de revisiones
+entre reviewers cuando existen múltiples candidatos válidos. Asimismo, la gestión de conflictos de interés 
+entre autores y reviewers aparece como una mejora opcional, por lo que se decidió implementar una validación 
+básica que impida que un autor revise su propio trabajo.
+
+Ante estas situaciones se optó por soluciones simples, priorizando la claridad del modelo y el cumplimiento 
+de los requisitos principales del TP.
 
 ## Estrategia de testing
 
-Se utilizarán tests unitarios con Jest siguiendo el estilo provisto por el proyecto base.
+Se utilizó Jest como framework de testing unitario, siguiendo el enfoque presentado durante la cursada. Asimismo,
+los tests fueron desarrollados de forma incremental, implementando primero los casos principales de negocio y
+luego incorporando validaciones y casos límite.
+
+Entre los escenarios verificados se incluyen: Asignación de reviewers a artículos, priorización de reviewers según bids de interés,
+validación de conflictos de interés, registro de revisiones, restricción de reviewers no asignados, límite máximo de revisiones por paper y
+selección de artículos según score.
+
+La ejecución de la suite de pruebas dio como resultado un **total de 31 tests exitosos y una cobertura global del 94,91%**.
+
+## Uso de Git
+
+El desarrollo se realizó utilizando Git y GitHub para registrar la evolución del proyecto, realizandose commits incrementales asociados a cada funcionalidad implementada, permitiendo mantener trazabilidad entre las decisiones de diseño, los tests desarrollados y 
+los cambios realizados sobre el código fuente.
+
+## Uso de IA Generativa
+
+La IA generativa fue utilizada como herramienta de apoyo durante el desarrollo para analizar alternativas de implementación, comprender conceptos de testing y validar decisiones de diseño. Todas las funcionalidades implementadas fueron revisadas, adaptadas e integradas manualmente dentro de la arquitectura propuesta por el proyecto base.
+
+## Conclusiones
+
+Se logró implementar el flujo principal del sistema ComfyChair, cubriendo los procesos de asignación de reviewers, carga de revisiones y selección de artículos. Asimismo, las decisiones de diseño adoptadas se ralizron en el marco de mantener la simplicidad del modelo, respetar las responsabilidades de cada clase y reutilizar la estructura provista por el proyecto base.
+
+El resultado obtenido presenta una cobertura superior al mínimo solicitado y una suite de pruebas que valida tanto los escenarios principales del sistema como distintas restricciones del dominio, incluyendo reviewers no asignados, límite máximo de revisiones, conflictos de interés y priorización mediante bids.
