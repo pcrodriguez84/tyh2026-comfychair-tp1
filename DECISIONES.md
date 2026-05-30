@@ -100,7 +100,7 @@ porcentaje configurado.
 Esta implementación permite modelar un proceso básico de aceptación académica, mantiene la lógica de 
 selección centralizada dentro de Session y reutiliza el cálculo de score ya definido en la clase Paper.
 
-## Observaciones 
+## Observaciones/Ambigüedades
 
 Durante la implementación se identificaron algunas cuestiones no completamente especificadas en el enunciado,
 por lo tanto se observó que no se detalla cómo resolver empates entre artículos con igual score promedio durante 
