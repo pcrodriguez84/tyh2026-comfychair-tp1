@@ -1,5 +1,11 @@
 const {Bid, Interests} = require("./Bid");
 
+
+// Política de aceptación por defecto.
+// Mantiene el comportamiento original del TP1.
+const AcceptanceByPercentage =
+    require("./AcceptanceByPercentage");
+
 class Session{
     constructor(){
         this._name = "";
@@ -8,7 +14,19 @@ class Session{
         this._bids=[];
         this._assignments = []; //Reviewer assignment TEST
         this._stage="Receiving";
+
+        // Estrategia utilizada para decidir qué papers son aceptados.
+       // Inicialmente conserva el comportamiento existente.
+        this._acceptancePolicy = new AcceptanceByPercentage(100);
+
     }
+
+    // Permite cambiar dinámicamente la política de aceptación
+    // sin modificar el resto de la sesión.
+    setAcceptancePolicy(policy){
+        this._acceptancePolicy = policy;
+    }
+
     name(){
         return this._name;
     };
@@ -152,6 +170,7 @@ class Session{
     
     }
 
+    /*
     selectAcceptedPapers(acceptancePercentage){
 
         // Ordena papers de mayor score a menor score
@@ -167,7 +186,16 @@ class Session{
         // Devuelve solamente los mejores papers
         return orderedPapers.slice(0, acceptedCount);
     
-    }
+    }*/
+
+        // Delega la decisión de aceptación a la política configurada.
+        // Session deja de conocer los detalles de cada algoritmo.
+        selectAcceptedPapers(){
+
+            return this._acceptancePolicy
+                .acceptedPapers(this._papers);
+        
+        }
 
 
 }
