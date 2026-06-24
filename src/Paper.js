@@ -8,6 +8,14 @@ class Paper{
         this._authors = authors;
         this._correspondingAuthor = correspondingAuthor;
     }
+
+    //Corrección Issue 1 TP1
+    // Indica si el usuario recibido forma parte de la lista de autores.
+    // Esta responsabilidad pertenece a Paper, ya que conoce quiénes son sus autores.
+    isAuthor(user){
+    return this._authors.includes(user);
+    }
+
     title(){
         return this._title;
     }

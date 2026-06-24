@@ -116,8 +116,16 @@ class Session{
             let remainingReviewers = this._programCommittee
 
               // Excluye autores del paper
+              //  .filter( (reviewer) =>
+                //     !paper._authors.includes(reviewer)
+                //)
+
+                //Corrección Issue 1 TP1
+                // Excluye de la revisión a los autores del paper.
+                // Session delega la consulta al propio Paper para evitar
+                // acceder directamente a sus atributos internos.
                 .filter( (reviewer) =>
-                     !paper._authors.includes(reviewer)
+                    !paper.isAuthor(reviewer)
                 )
     
                 // Filtra reviewers que NO estén dentro de los interesados
