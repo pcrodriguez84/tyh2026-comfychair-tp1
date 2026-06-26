@@ -171,7 +171,8 @@ class Session{
     }
 
     
-    assignReviewers(){
+    //assignReviewers(){
+        doAssignReviewers(){
 
         // Recorre todos los papers enviados en la sesión
         for(let paper of this._papers){
@@ -233,8 +234,20 @@ class Session{
         }
     
         // Cambia la etapa de la sesión a Reviewing
-        this.setStage("Reviewing");
+        //lo hace biddingstate
+       // this.setStage("Reviewing");
     }
+
+    //session conoce el dominio y sabe asignar reviewers. 
+    //El patrón State solamente decide cuándo esa operación está permitida y
+    // cuál es la siguiente etapa.
+    assignReviewers(){
+
+        this._state.assignReviewers(this);
+    
+    }
+
+   
 
 
     

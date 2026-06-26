@@ -24,6 +24,22 @@ class BiddingState extends SessionState{
 
     }
 
+    // Durante el bidding se permite realizar la asignación
+    // de reviewers a los papers enviados.
+        assignReviewers(session){
+
+            session.doAssignReviewers();
+
+            // Finaliza el bidding y comienza la etapa de revisión.
+            //Si no actualizamos _stage, esos métodos van a seguir creyendo que 
+            //la sesión está en "Bidding".
+            session.setStage("Reviewing");
+            session.setState(
+                session.reviewingState()
+            );
+
+        }
+
 }
 
 module.exports = BiddingState;
