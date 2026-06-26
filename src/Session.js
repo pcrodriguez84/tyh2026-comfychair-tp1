@@ -261,6 +261,8 @@ class Session{
     //Review submission  TEST (2)
     //el reviewer fue asignado
     //guardar review
+
+    /*
     submitReview(paper, reviewer, reviewText, score){
 
         if(!this.reviewersFor(paper).includes(reviewer))
@@ -268,7 +270,31 @@ class Session{
     
         paper.addReview(reviewer, reviewText, score);
     
-    }
+    }*/
+
+        // El estado actual decide si una review puede cargarse.
+        submitReview(paper, reviewer, reviewText, score){
+
+            this._state.submitReview(
+                this,
+                paper,
+                reviewer,
+                reviewText,
+                score
+            );
+
+        }
+
+        // Implementa la lógica de negocio para registrar una review.
+        // Es invocado únicamente cuando el estado actual lo permite.
+        doSubmitReview(paper, reviewer, reviewText, score){
+
+            if(!this.reviewersFor(paper).includes(reviewer))
+                throw new Error("Reviewer not assigned");
+
+            paper.addReview(reviewer, reviewText, score);
+
+        }
 
     /*
     selectAcceptedPapers(acceptancePercentage){
@@ -290,11 +316,29 @@ class Session{
 
         // Delega la decisión de aceptación a la política configurada.
         // Session deja de conocer los detalles de cada algoritmo.
-        selectAcceptedPapers(){
+       /* selectAcceptedPapers(){
 
             return this._acceptancePolicy
                 .acceptedPapers(this._papers);
         
+        }*/
+
+        // El estado actual decide cuándo puede realizarse
+        // la selección de papers aceptados.
+        selectAcceptedPapers(){
+
+            return this._state.selectAcceptedPapers(this);
+
+        }
+
+        // Ejecuta la política de aceptación configurada.
+        // La decisión de cuándo puede invocarse queda
+        // delegada al estado actual.
+        doSelectAcceptedPapers(){
+
+            return this._acceptancePolicy
+                .acceptedPapers(this._papers);
+
         }
 
 
