@@ -133,6 +133,7 @@ class Session{
         return this._state.closeSubmissions(this);
 
     }
+    
     enterBid(paper, reviewer, interest){
         if (this.stage() == "Bidding" )
             if(this.bidExistsFor(paper, reviewer)){
