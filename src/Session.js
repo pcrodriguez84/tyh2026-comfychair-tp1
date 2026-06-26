@@ -133,7 +133,7 @@ class Session{
         return this._state.closeSubmissions(this);
 
     }
-    
+    /*
     enterBid(paper, reviewer, interest){
         if (this.stage() == "Bidding" )
             if(this.bidExistsFor(paper, reviewer)){
@@ -146,7 +146,20 @@ class Session{
             }
         else
             throw new Error("Cannot enter bids from the current stage.");
-    }
+    }*/
+
+    // Delega al estado actual la decisión de registrar un bid.
+        enterBid(paper, reviewer, interest){
+
+            this._state.enterBid(
+                this,
+                paper,
+                reviewer,
+                interest
+            );
+
+        }
+
     bidExistsFor(paper, reviewer){
         return typeof(this.bidFor(paper, reviewer)) != "undefined";
     }
