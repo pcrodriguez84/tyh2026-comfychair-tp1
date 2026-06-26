@@ -1,3 +1,8 @@
+const ReceivingState = require("./ReceivingState");
+const BiddingState = require("./BiddingState");
+const ReviewingState = require("./ReviewingState");
+const SelectionState = require("./SelectionState");
+
 const {Bid, Interests} = require("./Bid");
 
 
@@ -13,13 +18,47 @@ class Session{
         this._papers=[];
         this._bids=[];
         this._assignments = []; //Reviewer assignment TEST
-        this._stage="Receiving";
+        //this._stage="Receiving";
+
+        //commit 3
+        // Instancias de los distintos estados de la sesión.
+        // Se crean una sola vez y se reutilizan durante todo el ciclo de vida.
+        this._receivingState = new ReceivingState();
+        this._biddingState = new BiddingState();
+        this._reviewingState = new ReviewingState();
+        this._selectionState = new SelectionState();
+
+        // La sesión comienza en estado Receiving.
+        this._state = this._receivingState;
 
         // Estrategia utilizada para decidir qué papers son aceptados.
        // Inicialmente conserva el comportamiento existente.
         this._acceptancePolicy = new AcceptanceByPercentage(100);
 
     }
+
+
+    // Los 5 métodos que siguen cambian el estado actual de la sesión.
+    //Patrón State
+        setState(state){
+            this._state = state;
+        }
+
+        receivingState(){
+            return this._receivingState;
+        }
+
+        biddingState(){
+            return this._biddingState;
+        }
+
+        reviewingState(){
+            return this._reviewingState;
+        }
+
+        selectionState(){
+            return this._selectionState;
+        }    
 
     // Permite cambiar dinámicamente la política de aceptación
     // sin modificar el resto de la sesión.
@@ -39,12 +78,21 @@ class Session{
     addReviewer(user){
         this._programCommittee.push(user);
     }
+
+    /*
+    Método utilizado en la implementación anterior.
+    Deja de ser necesario al aplicar State, ya que el propio
+    estado decide si una operación está permitida.
+
+
     canSubmit(paper){
         if (this.stage() == "Receiving" )
             return paper.isValid();
         else 
             return false;
-    }
+    }*/
+
+    /*
     submit(paper){
         if (!this.canSubmit(paper)) throw new Error("Cannot submit invalid paper");
         
@@ -52,7 +100,21 @@ class Session{
             this._papers.push(paper);
         else
             throw new Error("Cannot submit papers at this stage");
+    }*/
+
+    
+    // La consulta se delega al estado actual.
+    canSubmit(paper){
+        return this._state.canSubmit(this, paper);
     }
+
+    // La responsabilidad de decidir si un paper puede enviarse
+    // queda delegada al estado actual de la sesión.
+   
+    submit(paper){
+     this._state.submit(this, paper);
+    }
+
     papers(){
         return this._papers;
     }
@@ -65,8 +127,11 @@ class Session{
     setStage(stage){
         this._stage = stage;
     }
+    // Delega el cambio de etapa al estado actual.
     closeSubmissions(){
-        this.setStage("Bidding");
+        //this.setStage("Bidding");
+        return this._state.closeSubmissions(this);
+
     }
     enterBid(paper, reviewer, interest){
         if (this.stage() == "Bidding" )
