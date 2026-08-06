@@ -1,4 +1,5 @@
 const SessionState = require("./SessionState");
+const BiddingState = require("./BiddingState");
 
 // Estado inicial de una sesión.
 // En esta etapa solamente se permite recibir papers
@@ -20,21 +21,18 @@ class ReceivingState extends SessionState{
         session._papers.push(paper);
     }
 
+    
+    //ISSUE 4  
     // Finaliza la recepción de trabajos/papers y
     // habilita el período de bidding.
  
-closeSubmissions(session){
+    closeSubmissions(session){
 
-    // Mantiene sincronizado el mecanismo anterior
-    // mientras se completa la migración al patrón State.
-    //Porque todavía hay métodos (enterBid, etc.) que preguntan:
-    //this.stage()
-    //Si no actualizamos _stage, esos métodos van a seguir creyendo que 
-    //la sesión está en "Receiving".
-    session.setStage("Bidding");
-
-    // Cambia el estado actual de la sesión.
-    session.setState(session.biddingState());
+        // ReceivingState conoce directamente cuál es el siguiente
+        // estado del flujo.
+        session.setState(
+            new BiddingState()
+        );
     }
 
 }

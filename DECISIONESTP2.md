@@ -18,13 +18,13 @@ políticas configurables sin afectar el resto del modelo.
 Se decidió aplicar el patrón Strategy para desacoplar el algoritmo de aceptación 
 de papers de la clase Session.
 
-Para ello se incorporó la clase abstracta AcceptancePolicy, responsable de definir el protocolo 
+Para ello se incorporó la clase abstracta "AcceptancePolicy", responsable de definir el protocolo 
 común para todas las políticas de aceptación. A partir de esta abstracción se implementaron 
 las estrategias concretas:
 
-AcceptanceByPercentage, que preserva el comportamiento original del TP1 basado en un porcentaje de aceptación.
-AcceptanceByCount, que permite aceptar una cantidad fija de artículos ordenados por score.
-AcceptanceByScoreThreshold, que permite aceptar todos los artículos cuyo score promedio supere un valor mínimo configurable.
+"AcceptanceByPercentage", que preserva el comportamiento original del TP1 basado en un porcentaje de aceptación.
+"AcceptanceByCount", que permite aceptar una cantidad fija de artículos ordenados por score.
+"AcceptanceByScoreThreshold", que permite aceptar todos los artículos cuyo score promedio supere un valor mínimo configurable.
 
 La clase Session deja de conocer los detalles de cada algoritmo de selección y delega la decisión 
 a la política configurada mediante una referencia a AcceptancePolicy.
@@ -84,6 +84,46 @@ propia del dominio, reduciendo el acoplamiento y facilitando la incorporación d
 o modificaciones del proceso sin afectar significativamente el resto del sistema.
 
 Durante la migración al patrón State se mantuvo el atributo `_stage` para preservar la compatibilidad con la implementación original del TP1. Actualmente el comportamiento de la sesión ya se encuentra delegado a los distintos estados, por lo que dicho atributo podría eliminarse en un refactoring posterior sin modificar el comportamiento del sistema.
+
+### Decisión 4 - Issue 4 Session instancia y nombra explícitamente cada estado posible.
+
+ Esta implementación cubre la ISSUE ession instancia y nombra explícitamente cada estado posible del TP2.
+ La implementación original de Session creaba y mantenía instancias de todos los estados 
+ (ReceivingState, BiddingState, ReviewingState y SelectionState) como atributos propios. 
+ Además, exponía un getter para cada uno de ellos, de manera que las transiciones se 
+ realizaban invocando métodos como session.biddingState() o session.reviewingState().
+
+ Este diseño generaba un fuerte acoplamiento entre Session y la totalidad del flujo de estados. 
+ Cada vez que fuera necesario agregar un nuevo estado o modificar la secuencia de transición, 
+ sería necesario cambiar el constructor de Session, agregar un nuevo atributo y exponer un nuevo getter,
+
+ Para ello se decidió modificar la implementación para que Session únicamente conozca 
+ el estado actual del sistema. Cada estado pasó a ser responsable de conocer cuál 
+ es el siguiente estado al que debe transicionar, creando y estableciendo una instancia del
+ estado a transicionar.
+
+Por lo tanto, Session deja de actuar como un repositorio de estados y solamente mantiene 
+una referencia al estado actual mediante el atributo _state.
+
+Esta modificación reduce el acoplamiento entre Session y las implementaciones concretas de los estados, 
+delegando la responsabilidad de las transiciones a las propias clases que representan cada etapa del proceso.
+
+Como consecuencia, la incorporación de nuevos estados o la modificación del flujo requiere 
+intervenir únicamente sobre los estados involucrados, sin necesidad de modificar Session.
+
+La lógica de negocio continúa residiendo en Session, mientras que SessionState conserva 
+exclusivamente la responsabilidad de decidir qué operaciones están permitidas en cada etapa 
+y cuándo realizar la transición al siguiente estado.
+
+A nivel de implementación Session deja de conocer todos los estados posibles,
+se eliminaron los atributos _receivingState, _biddingState, _reviewingState y _selectionState,
+los getters asociados a cada estado, se eliminaron los métodos stage() y setStage(), 
+ya que el estado actual queda representado únicamente mediante el patrón State.
+Los 32 tests existentes continúan pasando sin modificaciones en el comportamiento observable del sistema.
+
+
+
+
 
 
 

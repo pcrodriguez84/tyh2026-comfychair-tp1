@@ -1,5 +1,7 @@
 const SessionState = require("./SessionState");
+const ReviewingState = require("./ReviewingState");
 const {Bid} = require("./Bid");
+
 
 // Estado donde los reviewers pueden cargar bids
 // y luego se realiza la asignación de revisores.
@@ -24,20 +26,19 @@ class BiddingState extends SessionState{
 
     }
 
-    // Durante el bidding se permite realizar la asignación
-    // de reviewers a los papers enviados.
+    
+     // ISSUE 4
+     // Durante el bidding se permite realizar la asignación
+     // de reviewers a los papers enviados.
         assignReviewers(session){
 
+            // Session conserva la ejecución de la lógica de negocio.
             session.doAssignReviewers();
-
-            // Finaliza el bidding y comienza la etapa de revisión.
-            //Si no actualizamos _stage, esos métodos van a seguir creyendo que 
-            //la sesión está en "Bidding".
-            session.setStage("Reviewing");
+        
+            // BiddingState conoce directamente el siguiente estado.
             session.setState(
-                session.reviewingState()
+                new ReviewingState()
             );
-
         }
 
 }

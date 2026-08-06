@@ -288,4 +288,60 @@ describe("Paper selection", ()=>{
 
     })//
 
+
+    it("should not allow reviews after selecting accepted papers", () => {
+
+        let reviewer1 = new User(
+            "Reviewer 1",
+            "UNLP",
+            "r1@test.com",
+            "123"
+        );
+    
+        let reviewer2 = new User(
+            "Reviewer 2",
+            "UNLP",
+            "r2@test.com",
+            "123"
+        );
+    
+        let reviewer3 = new User(
+            "Reviewer 3",
+            "UNLP",
+            "r3@test.com",
+            "123"
+        );
+    
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+    
+        asse.submit(paper01);
+        asse.closeSubmissions();
+        asse.assignReviewers();
+    
+        asse.submitReview(
+            paper01,
+            reviewer1,
+            "First review",
+            3
+        );
+    
+        // La sesión pasa de Reviewing a Selection.
+        asse.selectAcceptedPapers();
+    
+        let lateReview = () => {
+            asse.submitReview(
+                paper01,
+                reviewer2,
+                "Late review",
+                2
+            );
+        };
+    
+        expect(lateReview).toThrow(
+            "Cannot submit reviews at this stage."
+        );
+    });
+
 })

@@ -1,4 +1,5 @@
 const SessionState = require("./SessionState");
+const SelectionState = require("./SelectionState");
 
 // Estado donde los reviewers asignados pueden cargar sus reviews.
 class ReviewingState extends SessionState{
@@ -20,7 +21,14 @@ class ReviewingState extends SessionState{
     // la política de aceptación para obtener los papers aceptados.
     selectAcceptedPapers(session){
 
-        return session.doSelectAcceptedPapers();
+        // ReviewingState conoce directamente el siguiente estado.
+        const selectionState = new SelectionState();
+        session.setState(selectionState);
+
+         // La selección se ejecuta ya bajo la responsabilidad
+        // del nuevo estado.
+        return selectionState.selectAcceptedPapers(session);
+        
 
     }
 
