@@ -87,7 +87,7 @@ Durante la migración al patrón State se mantuvo el atributo `_stage` para pres
 
 ### Decisión 4 - Issue 4 Session instancia y nombra explícitamente cada estado posible.
 
- Esta implementación cubre la ISSUE ession instancia y nombra explícitamente cada estado posible del TP2.
+ Esta implementación cubre la ISSUE Session instancia y nombra explícitamente cada estado posible del TP2.
  La implementación original de Session creaba y mantenía instancias de todos los estados 
  (ReceivingState, BiddingState, ReviewingState y SelectionState) como atributos propios. 
  Además, exponía un getter para cada uno de ellos, de manera que las transiciones se 
@@ -122,8 +122,40 @@ ya que el estado actual queda representado únicamente mediante el patrón State
 Los 32 tests existentes continúan pasando sin modificaciones en el comportamiento observable del sistema.
 
 
+### Decisión 5 - Issue 3 La asignación reviewer-paper se modela con objetos literales en lugar de una clase propia.
+Esta implementación cubre la ISSUE 3
+La implementación original representaba las asignaciones entre un paper y un reviewer mediante objetos anónimos, 
+resolviendo funcionalmente las asignaciones, pero no modela explícitamente dicho concepto en el dominio. Por lo tanto,
+cualquier información o comportamiento futuro relacionado con una asignación (por ejemplo prioridad, estado, 
+fecha de asignación o métodos de consulta) debería incorporarse directamente en Session, concentrando aún más 
+responsabilidades en la clase coordinadora. Además, los métodos de Session quedaban acoplados a la 
+estructura interna de esos objetos anónimos, accediendo directamente a sus atributos para obtener 
+el paper o el reviewer asociado.
 
+Se decidió introducir una nueva clase denominada Assignment, responsable de representar explícitamente 
+la relación entre un Paper y un Reviewer. Cada asignación pasa a encapsular las referencias al paper
+y al reviewer mediante sus propios métodos de consulta (paper() y reviewer()), eliminando la 
+dependencia de Session respecto de la representación interna utilizada.
 
+Asimismo, Session deja de crear objetos anónimos y comienza a trabajar exclusivamente con instancias 
+de Assignment. Desde el punto de vista del dominio, una asignación constituye un concepto con 
+identidad propia y no simplemente un conjunto de datos temporales. Modelar este concepto mediante una 
+clase específica incrementa la expresividad del modelo y deja preparado el diseño para futuras 
+extensiones sin necesidad de modificar la lógica existente.
 
+Por otra parte en la ISSUE se sugiere evaluar la posibilidad de trasladar las asignaciones directamente 
+a Paper, de forma similar a como actualmente administra sus revisiones.
 
+Luego de analizar dicha alternativa, se decidió mantener inicialmente la colección de asignaciones dentro de Session.
+Esta decisión responde a dos motivos principales.
+
+En primer lugar, Session continúa siendo la responsable de coordinar el algoritmo global de asignación de revisores, 
+el cual requiere una visión completa de todas las asignaciones existentes para poder implementar posteriormente la 
+distribución equilibrada de carga solicitada en la siguiente Issue.
+
+En segundo lugar, trasladar inmediatamente las asignaciones hacia Paper ampliaría significativamente el alcance 
+del refactoring, afectando múltiples clases y aumentando el riesgo de introducir cambios 
+innecesarios en una etapa donde el objetivo principal consiste únicamente en fortalecer el modelado del dominio.
+
+Por este motivo se optó por una evolución incremental del diseño: primero introducir el concepto Assignment y posteriormente evaluar si resulta conveniente modificar la ubicación de la colección una vez implementado el nuevo algoritmo de asignación.
 

@@ -1,4 +1,5 @@
 const ReceivingState = require("./ReceivingState");
+const Assignment = require("./Assignment");
 
 
 const {Bid, Interests} = require("./Bid");
@@ -163,10 +164,10 @@ class Session{
            // Guarda las asignaciones reviewer-paper
             for(let reviewer of assignedReviewers){
     
-                this._assignments.push({
-                    paper: paper,
-                    reviewer: reviewer
-                });
+                
+                this._assignments.push(
+                    new Assignment(paper, reviewer)
+                );
     
             }
         }
@@ -187,11 +188,16 @@ class Session{
    
 
 
-    
-    reviewersFor(paper){
-        let assignmentsForPaper = this._assignments.filter( (assignment) => assignment.paper == paper );
-        return assignmentsForPaper.map( (assignment) => assignment.reviewer );
-    }
+        reviewersFor(paper) {
+
+            let assignmentsForPaper = this._assignments.filter(
+                (assignment) => assignment.paper() == paper
+            );
+        
+            return assignmentsForPaper.map(
+                (assignment) => assignment.reviewer()
+            );
+        }
 
 
 
