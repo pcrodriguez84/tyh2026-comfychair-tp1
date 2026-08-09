@@ -1,5 +1,6 @@
 const ReceivingState = require("./ReceivingState");
 const Assignment = require("./Assignment");
+const Paper = require("./Paper");
 
 
 const {Bid, Interests} = require("./Bid");
@@ -9,6 +10,8 @@ const {Bid, Interests} = require("./Bid");
 // Mantiene el comportamiento original del TP1.
 const AcceptanceByPercentage =
     require("./AcceptanceByPercentage");
+
+
 
 class Session{
     constructor(){
@@ -132,7 +135,7 @@ assignmentPriorityFor(paper, reviewer){
 
 doAssignReviewers(){
 
-    const totalAssignments = this._papers.length * 3;
+    const totalAssignments = this._papers.length * Paper.allowedReviews;
     const reviewerCount = this._programCommittee.length;
 
     if(totalAssignments == 0)
@@ -253,7 +256,7 @@ doAssignReviewers(){
 
 
         let assignedReviewers =
-            candidates.slice(0, 3);
+            candidates.slice(0, Paper.allowedReviews);
 
 
         // Registra las asignaciones.

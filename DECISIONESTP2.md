@@ -183,7 +183,14 @@ Separar el cálculo de prioridad en "assignmentPriorityFor()" evita mezclar esa 
 
 Además, controlar la carga acumulada permite satisfacer simultáneamente la preferencia expresada mediante los bids y la distribución equitativa exigida por el enunciado.
 
+### Decisión 7 - Refactoring Magic Number
+Se aplicó el refactoring Replace Magic Number with Symbolic Constant, reutilizando Paper.allowedReviews
+ para representar la cantidad máxima de revisiones por paper y evitar duplicar la regla de dominio.
+
+
 ## Estrategia de testing
 La totalidad de la suite continúa pasando satisfactoriamente: 34 tests.
 La cobertura global se mantiene por encima del mínimo requerido, con 93.22% de statements y 93.08% de líneas.
+
+
 
