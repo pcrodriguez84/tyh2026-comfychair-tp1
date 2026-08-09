@@ -102,6 +102,204 @@ describe("Reviewer assignment", ()=>{
         expect(asse.reviewersFor(paper01)).toContain(reviewer2);
         expect(asse.reviewersFor(paper01)).toContain(reviewer3);
     })
+
+    // TEST Distribución equitativa de carga entre reviewers
+    it("should distribute reviewer workload evenly", () => {
+
+        let reviewers = [];
+    
+        // Creamos 7 reviewers
+        for(let i = 1; i <= 7; i++){
+            let reviewer = new User(
+                "Reviewer " + i,
+                "UNLP",
+                "r" + i + "@test.com",
+                "123"
+            );
+    
+            reviewers.push(reviewer);
+            asse.addReviewer(reviewer);
+        }
+    
+        // Creamos 10 papers
+        let papers = [];
+    
+        for(let i = 1; i <= 10; i++){
+    
+            let paper = new Paper(
+                "Paper " + i,
+                [juan],
+                juan
+            );
+    
+            papers.push(paper);
+            asse.submit(paper);
+        }
+    
+        asse.closeSubmissions();
+    
+        asse.assignReviewers();
+    
+        // Contamos cuántas asignaciones recibió cada reviewer
+        let assignmentsPerReviewer = reviewers.map(
+            (reviewer) =>
+                papers.filter(
+                    (paper) =>
+                        asse.reviewersFor(paper).includes(reviewer)
+                ).length
+        );
+    
+        expect(assignmentsPerReviewer).toEqual(
+            [5, 5, 4, 4, 4, 4, 4]
+        );
+    
+    });
+
+    // TEST Prioridad de bids: Interested > Maybe > NotInterested
+
+    it("should prioritize Interested over Maybe over NotInterested", ()=>{
+
+        let reviewer1 =
+            new User(
+                "Reviewer 1",
+                "UNLP",
+                "r1@test.com",
+                "123"
+            );
+    
+        let reviewer2 =
+            new User(
+                "Reviewer 2",
+                "UNLP",
+                "r2@test.com",
+                "123"
+            );
+    
+        let reviewer3 =
+            new User(
+                "Reviewer 3",
+                "UNLP",
+                "r3@test.com",
+                "123"
+            );
+    
+        let reviewer4 =
+            new User(
+                "Reviewer 4",
+                "UNLP",
+                "r4@test.com",
+                "123"
+            );
+    
+        let reviewer5 =
+            new User(
+                "Reviewer 5",
+                "UNLP",
+                "r5@test.com",
+                "123"
+            );
+    
+    
+        asse.addReviewer(reviewer1);
+        asse.addReviewer(reviewer2);
+        asse.addReviewer(reviewer3);
+        asse.addReviewer(reviewer4);
+        asse.addReviewer(reviewer5);
+    
+    
+        let secondPaper =
+            new Paper(
+                "Second paper",
+                [juan],
+                juan
+            );
+    
+    
+        asse.submit(paper01);
+        asse.submit(secondPaper);
+    
+        asse.closeSubmissions();
+    
+    
+        // El orden es intencional:
+        //
+        // reviewer2 y reviewer3 aparecen antes que reviewer4
+        // en el comité, pero son NotInterested.
+        //
+        // reviewer4 es Maybe y debe tener prioridad sobre ellos.
+    
+        asse.enterBid(
+            paper01,
+            reviewer1,
+            Interests.Interested
+        );
+    
+        asse.enterBid(
+            paper01,
+            reviewer2,
+            Interests.NotInterested
+        );
+    
+        asse.enterBid(
+            paper01,
+            reviewer3,
+            Interests.NotInterested
+        );
+    
+        asse.enterBid(
+            paper01,
+            reviewer4,
+            Interests.Maybe
+        );
+    
+        asse.enterBid(
+            paper01,
+            reviewer5,
+            Interests.NotInterested
+        );
+    
+    
+        asse.assignReviewers();
+    
+    
+        let assigned =
+            asse.reviewersFor(paper01);
+    
+    
+        // Interested debe ser elegido.
+        expect(assigned)
+            .toContain(reviewer1);
+    
+    
+        // Maybe debe ser elegido antes que
+        // los reviewers NotInterested.
+        expect(assigned)
+            .toContain(reviewer4);
+    
+    
+        // Como hay solamente tres lugares,
+        // sólo uno de los tres NotInterested
+        // debe resultar asignado.
+    
+        let notInterestedAssigned =
+            [
+                reviewer2,
+                reviewer3,
+                reviewer5
+            ]
+            .filter(
+                (reviewer) =>
+                    assigned.includes(reviewer)
+            );
+    
+    
+        expect(
+            notInterestedAssigned
+        ).toHaveLength(1);
+    });
+
+
+    
 })
 
 
@@ -190,40 +388,7 @@ describe("Review submission", ()=>{
     
     })
 
-    //Si alguien marcó Interested, debería ser elegido y debería tener prioridad durante el proceso de selección.
-    //TEST Prioridad de Bids
-    it("should prioritize interested reviewers during assignment", ()=>{
-
-          // Creamos cuatro reviewers
-        let reviewer1 = new User("Reviewer 1", "UNLP", "r1@test.com", "123");
-        let reviewer2 = new User("Reviewer 2", "UNLP", "r2@test.com", "123");
-        let reviewer3 = new User("Reviewer 3", "UNLP", "r3@test.com", "123");
-        let reviewer4 = new User("Reviewer 4", "UNLP", "r4@test.com", "123");
     
-        //se agregan riviewers al comite
-        asse.addReviewer(reviewer1);
-        asse.addReviewer(reviewer2);
-        asse.addReviewer(reviewer3);
-        asse.addReviewer(reviewer4);
-    
-         // Se envía el paper a la sesión
-        asse.submit(paper01);
-    
-        //sesion pasa a etapa de bidding
-        asse.closeSubmissions();
-    
-        //Reviewer4 expresa interés en revisar paper01 mediante un bid Interested
-        asse.enterBid(paper01, reviewer4, Interests.Interested);
-        
-        // Se ejecuta el proceso de asignación  de reviewers
-        asse.assignReviewers();
-    
-         // Verificamos que reviewer4 haya sido asignado como reviewer del paper, debido a su interés
-        expect(asse.reviewersFor(paper01)).toContain(reviewer4);
-    
-    })
-
-
     // TEST Un autor no pude revisar su propo paper
     it("should not assign authors as reviewers of their own papers", ()=>{
 

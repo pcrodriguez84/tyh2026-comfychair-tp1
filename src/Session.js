@@ -109,72 +109,170 @@ class Session{
         return this.bidFor(paper, reviewer).interest();
     }
 
-    
-    //assignReviewers(){
-        doAssignReviewers(){
 
-        // Recorre todos los papers enviados en la sesión
-        for(let paper of this._papers){
-    
-            // Busca reviewers que hayan marcado Interested
-            // para el paper actual
-            let interestedReviewers = this._bids
-    
-                // Filtra bids:  del paper actual y  con interés Interested
-                .filter( (bid) =>
-                    bid.paper() == paper &&
-                    bid.interest() == Interests.Interested
-                )
-    
-                // Obtiene solamente el reviewer de cada bid
-                .map( (bid) => bid.reviewer() );
-        
-    
-            // Obtiene reviewers restantes del comité
-            // que todavía no fueron seleccionados
-            let remainingReviewers = this._programCommittee
 
-              // Excluye autores del paper
-              //  .filter( (reviewer) =>
-                //     !paper._authors.includes(reviewer)
-                //)
+// Devuelve la prioridad de un reviewer para un paper.
+// Un valor menor representa una preferencia mayor.
+// Si no existe un bid, el TP1 indica que se considera NotInterested.
+assignmentPriorityFor(paper, reviewer){
 
-                //Corrección Issue 1 TP1
-                // Excluye de la revisión a los autores del paper.
-                // Session delega la consulta al propio Paper para evitar
-                // acceder directamente a sus atributos internos.
-                .filter( (reviewer) =>
-                    !paper.isAuthor(reviewer)
-                )
-    
-                // Filtra reviewers que NO estén dentro de los interesados
-                .filter( (reviewer) =>
-                    !interestedReviewers.includes(reviewer)
-                );
-        
-            // Une:
-            // 1. reviewers interesados
-            // 2. reviewers restantes
-            //
-            // y toma solamente los primeros 3
-            let assignedReviewers = interestedReviewers
-                .concat(remainingReviewers)
-                .slice(0,3);
-    
-           // Guarda las asignaciones reviewer-paper
-            for(let reviewer of assignedReviewers){
-    
-                
-                this._assignments.push(
-                    new Assignment(paper, reviewer)
-                );
-    
-            }
-        }
-    
+    let bid = this.bidFor(paper, reviewer);
 
-        
+    if(typeof(bid) == "undefined")
+        return 2;
+
+    if(bid.interest() == Interests.Interested)
+        return 0;
+
+    if(bid.interest() == Interests.Maybe)
+        return 1;
+
+    return 2;
+}
+
+doAssignReviewers(){
+
+    const totalAssignments = this._papers.length * 3;
+    const reviewerCount = this._programCommittee.length;
+
+    if(totalAssignments == 0)
+        return;
+
+    if(reviewerCount == 0)
+        throw new Error("Cannot assign reviewers without a program committee");
+
+
+    // Calcula la carga correspondiente a cada reviewer.
+    //
+    // Ejemplo:
+    // 10 papers * 3 = 30 asignaciones
+    // 30 / 7 = 4 con resto 2
+    //
+    // Capacidades:
+    // [5, 5, 4, 4, 4, 4, 4]
+
+    const baseLoad =
+        Math.floor(totalAssignments / reviewerCount);
+
+    const remainder =
+        totalAssignments % reviewerCount;
+
+
+    let capacityByReviewer = new Map();
+    let assignmentsByReviewer = new Map();
+
+
+    // Inicializa capacidad y carga actual.
+    for(let i = 0; i < reviewerCount; i++){
+
+        let reviewer =
+            this._programCommittee[i];
+
+        let capacity =
+            baseLoad +
+            (i < remainder ? 1 : 0);
+
+        capacityByReviewer.set(
+            reviewer,
+            capacity
+        );
+
+        assignmentsByReviewer.set(
+            reviewer,
+            0
+        );
     }
+
+
+    // Recorre todos los papers.
+    for(let paper of this._papers){
+
+        let candidates =
+            this._programCommittee
+
+                // Un autor no puede revisar su propio paper.
+                .filter(
+                    (reviewer) =>
+                        !paper.isAuthor(reviewer)
+                )
+
+                // Sólo considera reviewers que todavía
+                // tengan capacidad disponible.
+                .filter(
+                    (reviewer) =>
+                        assignmentsByReviewer.get(reviewer)
+                        <
+                        capacityByReviewer.get(reviewer)
+                );
+
+
+        // Ordena primero por prioridad del Bid:
+        //
+        // Interested > Maybe > NotInterested
+        //
+        // Dentro del mismo nivel de interés se prioriza
+        // al reviewer con menor carga actual.
+        //
+        // Ante empate se conserva el orden original
+        // del comité.
+
+        candidates.sort(
+            (reviewerA, reviewerB) => {
+
+                let priorityDifference =
+                    this.assignmentPriorityFor(
+                        paper,
+                        reviewerA
+                    )
+                    -
+                    this.assignmentPriorityFor(
+                        paper,
+                        reviewerB
+                    );
+
+                if(priorityDifference != 0)
+                    return priorityDifference;
+
+
+                let loadDifference =
+                    assignmentsByReviewer.get(reviewerA)
+                    -
+                    assignmentsByReviewer.get(reviewerB);
+
+                if(loadDifference != 0)
+                    return loadDifference;
+
+
+                return this._programCommittee
+                    .indexOf(reviewerA)
+                    -
+                    this._programCommittee
+                    .indexOf(reviewerB);
+            }
+        );
+
+
+        let assignedReviewers =
+            candidates.slice(0, 3);
+
+
+        // Registra las asignaciones.
+        for(let reviewer of assignedReviewers){
+
+            this._assignments.push(
+                new Assignment(
+                    paper,
+                    reviewer
+                )
+            );
+
+            assignmentsByReviewer.set(
+                reviewer,
+                assignmentsByReviewer.get(reviewer) + 1
+            );
+        }
+    }
+}
 
     //session conoce el dominio y sabe asignar reviewers. 
     //El patrón State solamente decide cuándo esa operación está permitida y
@@ -184,7 +282,6 @@ class Session{
         this._state.assignReviewers(this);
     
     }
-
    
 
 

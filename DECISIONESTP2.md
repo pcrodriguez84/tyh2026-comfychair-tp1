@@ -159,3 +159,31 @@ innecesarios en una etapa donde el objetivo principal consiste únicamente en fo
 
 Por este motivo se optó por una evolución incremental del diseño: primero introducir el concepto Assignment y posteriormente evaluar si resulta conveniente modificar la ubicación de la colección una vez implementado el nuevo algoritmo de asignación.
 
+### Decisión 6 - Issue 1 El assignReviewers() no implementa la distribución equitativa de carga ni el orden completo de prioridad de bids
+
+La implementación original de "doAssignReviewers()" priorizaba únicamente a los reviewers que habían indicado "Interested" y agrupaba al resto sin distinguir entre "Maybe" y "NotInterested".
+
+Además, la asignación se realizaba de manera independiente para cada paper, sin considerar la cantidad de revisiones que ya había recibido cada reviewer. Esto podía provocar una distribución desequilibrada, asignando repetidamente los mismos reviewers mientras otros no recibían ninguna revisión.
+
+Ambos comportamientos no cumplian requisitos explícitos del TP1: distribuir equitativamente las revisiones entre el comité y respetar la prioridad "Interested > Maybe > NotInterested".
+
+Se modificó el algoritmo de asignación para incorporar dos criterios complementarios.
+
+En primer lugar, se calcula la cantidad total de asignaciones necesarias y se determina la capacidad correspondiente a cada reviewer. La carga base se distribuye entre todo el comité y el resto se asigna a los primeros reviewers, permitiendo obtener una distribución equilibrada.
+
+En segundo lugar, se incorporó el método "assignmentPriorityFor()", que determina la prioridad de cada reviewer para un paper según su bid
+("Interested": prioridad 0, "Maybe": prioridad 1 y "NotInterested": prioridad 2).
+La ausencia de un bid se considera equivalente a "NotInterested", de acuerdo con el comportamiento por defecto definido en el TP.
+
+Durante la asignación se excluyen los autores del paper y los reviewers que ya alcanzaron su capacidad. Los candidatos restantes se ordenan primero por prioridad de bid y, dentro del mismo nivel, por su carga actual.
+
+La solución mantiene en "session" la responsabilidad de coordinar la asignación, ya que para distribuir equitativamente las revisiones es necesario disponer de una visión global de los papers, reviewers y asignaciones de la sesión.
+
+Separar el cálculo de prioridad en "assignmentPriorityFor()" evita mezclar esa decisión con el algoritmo general y hace explícitos los tres niveles de interés requeridos por el dominio.
+
+Además, controlar la carga acumulada permite satisfacer simultáneamente la preferencia expresada mediante los bids y la distribución equitativa exigida por el enunciado.
+
+## Estrategia de testing
+La totalidad de la suite continúa pasando satisfactoriamente: 34 tests.
+La cobertura global se mantiene por encima del mínimo requerido, con 93.22% de statements y 93.08% de líneas.
+
